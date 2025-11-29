@@ -1,0 +1,8 @@
+# 簡単にログインボーナスを設定できるプラグイン！
+
+ - このプラグインを入れれば、簡単にログインボーナスが設定できます
+ - 管理者は、 `/setloginbonus 1`で36日目までのログインボーナスを設定できます
+ - なんと、`/setloginbonus n*36`でずっと設定できるって！？
+ - コマンドで少しいじくったアイテムでもOK!オリジナルアイテムでもOK!
+
+お問い合わせは、[Twitter(自称:X)](https://x.com/SakurabaPrivate) か [Youtube](https://www.youtube.com/@sakuraba-games) まで
