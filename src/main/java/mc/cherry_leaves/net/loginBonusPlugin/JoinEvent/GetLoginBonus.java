@@ -18,10 +18,14 @@ import java.time.temporal.ChronoUnit;
 public class GetLoginBonus {
     public GetLoginBonus(Player p) {
         NamespacedKey lastLoginKey = new NamespacedKey(new LoginBonusPlugin(), "last_login");
+        if (p.getPersistentDataContainer().get(lastLoginKey, PersistentDataType.LONG) == null) {
+            p.getPersistentDataContainer()
+                    .set(lastLoginKey, PersistentDataType.LONG, 0L);
+        }
         Long lastLogin = p.getPersistentDataContainer()
                 .get(lastLoginKey, PersistentDataType.LONG);
         p.getPersistentDataContainer()
-                .set(lastLoginKey, PersistentDataType.LONG, System.currentTimeMillis());
+                .set(lastLoginKey, PersistentDataType.LONG, System.currentTimeMillis() + ZoneId.of("Asia/Tokyo").getRules().getOffset(java.time.Instant.now()).getTotalSeconds() * 1000L);
 
         NamespacedKey LoginDaysKey = new NamespacedKey(new LoginBonusPlugin(), "login_days");
         if (!p.hasPlayedBefore()) {
@@ -32,15 +36,17 @@ public class GetLoginBonus {
                 .get(LoginDaysKey, PersistentDataType.INTEGER);
         //ここから下,ログインメッセージ
         p.sendMessage(Line());
-        if (lastLogin != null) {
+
+        if (lastLogin != null && lastLogin != 0) {
             p.sendMessage(JoinMessageText(p, lastLogin, LoginDays));
         }
-        else{
+        else {
             p.sendMessage(FirstJoinMessageText(p));
         }
         LoginDays = p.getPersistentDataContainer()
                 .get(LoginDaysKey, PersistentDataType.INTEGER);
-        p.sendMessage(AllJoinMessage(p, LoginDays));
+        
+        p.sendMessage(AllJoinMessage(LoginDays));
         p.sendMessage(Line());
     }
 
@@ -109,7 +115,7 @@ public class GetLoginBonus {
                 );
     }
 
-    private Component AllJoinMessage(Player p, Integer loginDays) {
+    private Component AllJoinMessage(Integer loginDays) {
         return Component.text("報酬のチェックは")
                 .color(NamedTextColor.AQUA)
                 .decoration(TextDecoration.BOLD, true)
