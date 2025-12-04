@@ -1,6 +1,8 @@
 package mc.cherry_leaves.net.loginBonusPlugin.GUI;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -15,7 +17,11 @@ public class LoginBonus {
         p.openInventory(LoginBonusInventory);
         new addInventoryInYaml().getInventoryInYaml1(((x / 36) + 1), LoginBonusInventory);
         for(int i = 0; i < (x % 36); i++){
-            LoginBonusInventory.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
+            ItemStack item = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+            ItemMeta meta = item.getItemMeta();
+            meta.displayName(Component.text((i+1) + "日目 ").color(NamedTextColor.YELLOW).append(Component.text("✓受け取り済み").color(NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, true)));
+            item.setItemMeta(meta);
+            LoginBonusInventory.setItem(i, item);
         }
         for(int i = 36; i < 45; i++){
             ItemStack item = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
