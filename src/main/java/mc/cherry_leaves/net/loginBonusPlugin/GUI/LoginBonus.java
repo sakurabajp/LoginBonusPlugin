@@ -1,13 +1,18 @@
 package mc.cherry_leaves.net.loginBonusPlugin.GUI;
 
+import mc.cherry_leaves.net.loginBonusPlugin.LoginBonusPlugin;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
+
+import java.util.List;
 
 public class LoginBonus {
 
@@ -15,26 +20,56 @@ public class LoginBonus {
         Inventory LoginBonusInventory = new InventoryList().Inventory1();
         p.getInventory().close();
         p.openInventory(LoginBonusInventory);
-        new addInventoryInYaml().getInventoryInYaml1(((x / 36) + 1), LoginBonusInventory);
+        int xx = (x / 36) + 1;
+        new addInventoryInYaml().getInventoryInYaml1(xx, LoginBonusInventory);
         for(int i = 0; i < (x % 36); i++){
-            ItemStack item = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
-            ItemMeta meta = item.getItemMeta();
-            meta.displayName(Component.text((i+1) + "日目 ").color(NamedTextColor.YELLOW).append(Component.text("✓受け取り済み").color(NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, true)));
-            item.setItemMeta(meta);
-            LoginBonusInventory.setItem(i, item);
+            LoginBonusInventory.setItem(i, SetItemMeta(Material.ORANGE_STAINED_GLASS_PANE, Component.text((i+1) + "日目 ").color(NamedTextColor.YELLOW).append(Component.text("✓受け取り済み").color(NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, true))));
         }
-        for(int i = 36; i < 45; i++){
-            ItemStack item = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
-            ItemMeta meta = item.getItemMeta();
-            meta.displayName(Component.text(" "));
-            item.setItemMeta(meta);
-            LoginBonusInventory.setItem(i, item);
+        for(int i = 37; i < 44; i++){
+            LoginBonusInventory.setItem(i, SetItemMeta(Material.GRAY_STAINED_GLASS_PANE, Component.text(" ")));
         }
+        LoginBonusInventory.setItem(40, GUIConfig(p, x));
+        if(xx > 63){xx = 63;}
+        LoginBonusInventory.setItem(36, SetItemMeta(Material.RED_STAINED_GLASS_PANE, Component.text("前のページへ"), (xx > 1) ? (xx - 1) : 1));
+        LoginBonusInventory.setItem(44, SetItemMeta(Material.LIME_STAINED_GLASS_PANE, Component.text("次のページへ"),(xx + 1)));
     }
 
     public LoginBonus(boolean b, Player p) {
         if(b) {
             p.getOpenInventory().setItem(35, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
         }
+    }
+
+    private ItemStack SetItemMeta(Material m, Component c){
+        ItemStack item = new ItemStack(m);
+        ItemMeta meta = item.getItemMeta();
+        meta.displayName(c);
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    private ItemStack SetItemMeta(Material item_m, Component c, int i){
+        ItemStack item = new ItemStack(item_m);
+        ItemMeta meta = item.getItemMeta();
+        meta.displayName(c);
+        item.setAmount(i);
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    private ItemStack GUIConfig(Player p,int x){
+        ItemStack item = new ItemStack(Material.ENDER_PEARL);
+        item.setAmount(1);
+        ItemMeta meta = item.getItemMeta();
+        meta.displayName(Component.text("ページ情報").color(NamedTextColor.YELLOW));
+        NamespacedKey LoginDaysKey = new NamespacedKey(new LoginBonusPlugin(), "login_days");
+        Integer LoginDays = p.getPersistentDataContainer().get(LoginDaysKey, PersistentDataType.INTEGER);
+        if(LoginDays == null) {LoginDays = 1;}
+        meta.lore(List.of(
+                Component.text("総ログイン日数 : ").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false).append(Component.text(LoginDays).color(NamedTextColor.BLUE).decoration(TextDecoration.ITALIC, false)),
+                Component.text("このログインページ : ").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false).append(Component.text(((x / 36) + 1) + "ページ").color(NamedTextColor.BLUE).decoration(TextDecoration.ITALIC, false))
+        ));
+        item.setItemMeta(meta);
+        return item;
     }
 }

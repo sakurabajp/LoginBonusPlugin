@@ -7,8 +7,8 @@ import mc.cherry_leaves.net.loginBonusPlugin.JoinEvent.main;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -16,7 +16,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -44,6 +43,13 @@ public final class LoginBonusPlugin extends JavaPlugin implements Listener {
         Player p = (Player) e.getWhoClicked();
         if(e.getView().title().equals(new InventoryList().text)){
             e.setCancelled(true);
+            if(e.getSlot() == 36 || e.getSlot() == 44){
+                p.playSound(p.getLocation(), Sound.BLOCK_TRIPWIRE_CLICK_ON, 0.85F, 1F);
+                if(e.getInventory().getItem(e.getSlot()) == null){return;}
+                int x = Objects.requireNonNull(e.getInventory().getItem(e.getSlot())).getAmount();
+                p.sendMessage(String.valueOf(x));
+                p.performCommand("loginbonus " + x);
+            }
         }
     }
 
@@ -56,7 +62,12 @@ public final class LoginBonusPlugin extends JavaPlugin implements Listener {
             public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String @NotNull [] args) {
                 if (!(sender instanceof Player p)) {return false;}
                 if(!sender.isOp()){return false;}
-                if(args.length == 0) {sender.sendMessage(Component.text("エラーが発生しました。引数を指定してやり直してください").color(NamedTextColor.RED)); return false;}
+                if(args.length == 0) {
+                    sender.sendMessage(Component.text("エラーが発生しました。引数を指定してやり直してください").color(NamedTextColor.RED));
+                    // sender.sendMessage(Component.text("ログインボーナス受け取り画面の設定に移ります").color(NamedTextColor.GREEN));
+                    // new LoginBonusConfig();
+                    return false;
+                }
                 if(args.length >= 2) {sender.sendMessage(Component.text("エラーが発生しました。引数は1つに指定してください").color(NamedTextColor.RED)); return false;}
                 else{
                     if(!args[0].matches("[0-9]+")){sender.sendMessage(Component.text("エラーが発生しました。引数は整数型で入力してください").color(NamedTextColor.RED));  return false;}
@@ -95,6 +106,10 @@ public final class LoginBonusPlugin extends JavaPlugin implements Listener {
                         return false;
                     }
 
+                    if(args[0].equals("0")){
+                        sender.sendMessage(Component.text("エラーが発生しました。引数は1以上で入力してください").color(NamedTextColor.RED));
+                        return false;
+                    }
                     int x;
                     if ((p.getPersistentDataContainer().get(new NamespacedKey(new LoginBonusPlugin(), "login_days"), PersistentDataType.INTEGER) == null)){
                         x = 1;
@@ -103,15 +118,15 @@ public final class LoginBonusPlugin extends JavaPlugin implements Listener {
                         x = Objects.requireNonNull(p.getPersistentDataContainer().get(new NamespacedKey(new LoginBonusPlugin(), "login_days"), PersistentDataType.INTEGER));
                     }
                     if((x / 36) + 1 > Integer.parseInt(args[0])) {
-                        new LoginBonus(p, Integer.parseInt(args[0]) * 36 - 1);
+                        new LoginBonus(p, (Integer.parseInt(args[0]) - 1) * 36);
                         new LoginBonus(true, p);
                     }
                     else if((x / 36) + 1 < Integer.parseInt(args[0])) {
-                        new LoginBonus(p, Integer.parseInt(args[0]) * 36);
+                        new LoginBonus(p, (Integer.parseInt(args[0]) - 1) * 36);
                         new LoginBonus(false, p);
                     }
                     else if((x / 36) + 1 == Integer.parseInt(args[0])) {
-                        new LoginBonus(p, x );
+                        new LoginBonus(p, x);
                     }
                 }
                 return false;
