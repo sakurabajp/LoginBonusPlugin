@@ -48,7 +48,6 @@ public final class LoginBonusPlugin extends JavaPlugin implements Listener {
                 p.playSound(p.getLocation(), Sound.BLOCK_TRIPWIRE_CLICK_ON, 0.85F, 1F);
                 if(e.getInventory().getItem(e.getSlot()) == null){return;}
                 int x = Objects.requireNonNull(e.getInventory().getItem(e.getSlot())).getAmount();
-                p.sendMessage(String.valueOf(x));
                 p.performCommand("loginbonus " + x);
             }
         }
