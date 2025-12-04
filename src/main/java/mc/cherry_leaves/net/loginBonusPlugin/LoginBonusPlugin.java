@@ -2,6 +2,7 @@ package mc.cherry_leaves.net.loginBonusPlugin;
 
 import mc.cherry_leaves.net.loginBonusPlugin.GUI.InventoryList;
 import mc.cherry_leaves.net.loginBonusPlugin.GUI.LoginBonus;
+import mc.cherry_leaves.net.loginBonusPlugin.GUI.LoginBonusConfig;
 import mc.cherry_leaves.net.loginBonusPlugin.GUI.addInventoryInYaml;
 import mc.cherry_leaves.net.loginBonusPlugin.JoinEvent.main;
 import net.kyori.adventure.text.Component;
@@ -41,7 +42,7 @@ public final class LoginBonusPlugin extends JavaPlugin implements Listener {
     @EventHandler
     public void onInventoryInsertEvent(InventoryClickEvent e) {
         Player p = (Player) e.getWhoClicked();
-        if(e.getView().title().equals(new InventoryList().text)){
+        if(e.getView().title().equals(new InventoryList().text1)){
             e.setCancelled(true);
             if(e.getSlot() == 36 || e.getSlot() == 44){
                 p.playSound(p.getLocation(), Sound.BLOCK_TRIPWIRE_CLICK_ON, 0.85F, 1F);
@@ -63,9 +64,8 @@ public final class LoginBonusPlugin extends JavaPlugin implements Listener {
                 if (!(sender instanceof Player p)) {return false;}
                 if(!sender.isOp()){return false;}
                 if(args.length == 0) {
-                    sender.sendMessage(Component.text("エラーが発生しました。引数を指定してやり直してください").color(NamedTextColor.RED));
-                    // sender.sendMessage(Component.text("ログインボーナス受け取り画面の設定に移ります").color(NamedTextColor.GREEN));
-                    // new LoginBonusConfig();
+                    sender.sendMessage(Component.text("ログインボーナス受け取り画面の設定に移ります").color(NamedTextColor.GREEN));
+                    new LoginBonusConfig(p);
                     return false;
                 }
                 if(args.length >= 2) {sender.sendMessage(Component.text("エラーが発生しました。引数は1つに指定してください").color(NamedTextColor.RED)); return false;}
