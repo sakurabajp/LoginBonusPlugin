@@ -32,18 +32,13 @@ public class addInventoryInYaml implements Listener {
         }
     }
 
-    public void addInventoryInYaml1(int x, Inventory inv) {
+    public void addInventoryInYaml1(int x, Inventory inv) throws IOException {
         File yamlFile = new File("plugins/LoginBonusPlugin/" + x + ".yml");
         YamlConfiguration config = YamlConfiguration.loadConfiguration(yamlFile);
 
         if (!yamlFile.exists()) {
-            try {
-                yamlFile.getParentFile().mkdirs();
-                yamlFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-                return;
-            }
+            yamlFile.getParentFile().mkdir();
+            yamlFile.createNewFile();
         }
 
         // 既存のslotセクションをクリア
@@ -56,21 +51,80 @@ public class addInventoryInYaml implements Listener {
             }
         }
 
+        config.save(yamlFile);
+    }
+
+    public boolean getSettingInYaml1(String op) {
+        boolean b = false;
+        File yamlFile = new File("plugins/LoginBonusPlugin/config.yml");
+        if (!yamlFile.exists()) {
+            try {
+                yamlFile.getParentFile().mkdirs();
+                yamlFile.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(yamlFile);
+
+        switch (op){
+            case "displayName":
+                b = config.getBoolean(op);
+                break;
+            default:
+                break;
+        }
+        return b;
+    }
+
+    public void setSettingInYaml1(String op, boolean b){
+        File yamlFile = new File("plugins/LoginBonusPlugin/config.yml");
+        if (!yamlFile.exists()) {
+            try {
+                yamlFile.getParentFile().mkdirs();
+                yamlFile.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(yamlFile);
+
+        switch (op){
+            case "displayName":
+                config.set(op, b);
+
+                break;
+            default:
+                break;
+        }
         try {
             config.save(yamlFile);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
     @EventHandler
-    public void onInventoryCloseEvent(InventoryCloseEvent e){
+    public void onInventoryCloseEvent(InventoryCloseEvent e) throws IOException {
         Component title = e.getView().title();
         String titleText = PlainTextComponentSerializer.plainText().serialize(title);
+        Inventory inv = e.getInventory();
         if(titleText.contains("日目までのログイン画面設定")){
-            Inventory inv = e.getInventory();
             int x = Integer.parseInt(titleText.replaceAll("[^0-9]", ""));
             new addInventoryInYaml().addInventoryInYaml1((int) x / 36, inv);
+        }
+
+        else if(title.equals(new InventoryList().text2)){
+            // config.yml取得
+            File yamlFile = new File("plugins/LoginBonusPlugin/config.yml");
+            if (!yamlFile.exists()) {return;}
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(yamlFile);
+
+            // 以下個別設定
+            // displayName: bool
+            boolean i = !Objects.requireNonNull(inv.getItem(10)).getEnchantments().isEmpty();
+            config.set("displayName", i);
+            config.save(yamlFile);
         }
     }
 }

@@ -1,6 +1,6 @@
 package mc.cherry_leaves.net.loginBonusPlugin;
 
-import mc.cherry_leaves.net.loginBonusPlugin.GUI.InventoryList;
+import mc.cherry_leaves.net.loginBonusPlugin.GUI.onInventoryClickEvent;
 import mc.cherry_leaves.net.loginBonusPlugin.GUI.LoginBonus;
 import mc.cherry_leaves.net.loginBonusPlugin.GUI.LoginBonusConfig;
 import mc.cherry_leaves.net.loginBonusPlugin.GUI.addInventoryInYaml;
@@ -9,18 +9,17 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
-import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public final class LoginBonusPlugin extends JavaPlugin implements Listener {
@@ -31,26 +30,13 @@ public final class LoginBonusPlugin extends JavaPlugin implements Listener {
         registerCommands();
         new LoginBonusPlugin().getServer().getPluginManager().registerEvents(this, this);
         new LoginBonusPlugin().getServer().getPluginManager().registerEvents(new addInventoryInYaml(), this);
+        new LoginBonusPlugin().getServer().getPluginManager().registerEvents(new onInventoryClickEvent(), this);
         super.onEnable();
     }
 
     @Override
     public void onDisable() {
         super.onEnable();
-    }
-
-    @EventHandler
-    public void onInventoryInsertEvent(InventoryClickEvent e) {
-        Player p = (Player) e.getWhoClicked();
-        if(e.getView().title().equals(new InventoryList().text1)){
-            e.setCancelled(true);
-            if(e.getSlot() == 36 || e.getSlot() == 44){
-                p.playSound(p.getLocation(), Sound.BLOCK_TRIPWIRE_CLICK_ON, 0.85F, 1F);
-                if(e.getInventory().getItem(e.getSlot()) == null){return;}
-                int x = Objects.requireNonNull(e.getInventory().getItem(e.getSlot())).getAmount();
-                p.performCommand("loginbonus " + x);
-            }
-        }
     }
 
     private void registerCommands() {
@@ -76,6 +62,14 @@ public final class LoginBonusPlugin extends JavaPlugin implements Listener {
                     new addInventoryInYaml().getInventoryInYaml1(x, inv);
                 }
                 return false;
+            }
+            @Override
+            public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, String[] args) throws IllegalArgumentException{
+                List<String> completions = new ArrayList<>();
+                if(args.length == 1){
+                    completions.add("1");
+                }
+                return completions;
             }
         };
         LoginBonusSetCommand.setDescription("ログインボーナスを設定");
@@ -129,6 +123,14 @@ public final class LoginBonusPlugin extends JavaPlugin implements Listener {
                     }
                 }
                 return false;
+            }
+            @Override
+            public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, String[] args) throws IllegalArgumentException{
+                List<String> completions = new ArrayList<>();
+                if(args.length == 1){
+                    completions.add("1");
+                }
+                return completions;
             }
         };
         LoginBonusCheckCommand.setDescription("ログインボーナスを確認");

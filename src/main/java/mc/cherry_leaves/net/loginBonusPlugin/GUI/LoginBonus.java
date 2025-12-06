@@ -13,6 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
+import java.util.Objects;
 
 public class LoginBonus {
 
@@ -22,6 +23,7 @@ public class LoginBonus {
         p.openInventory(LoginBonusInventory);
         int xx = (x / 36) + 1;
         new addInventoryInYaml().getInventoryInYaml1(xx, LoginBonusInventory);
+        changeItemMetaFromConfig(LoginBonusInventory);
         for(int i = 0; i < (x % 36); i++){
             LoginBonusInventory.setItem(i, SetItemMeta(Material.ORANGE_STAINED_GLASS_PANE, Component.text((i+1) + "日目 ").color(NamedTextColor.YELLOW).append(Component.text("✓受け取り済み").color(NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, true))));
         }
@@ -71,5 +73,18 @@ public class LoginBonus {
         ));
         item.setItemMeta(meta);
         return item;
+    }
+
+    private void changeItemMetaFromConfig(Inventory s) {
+        if (new addInventoryInYaml().getSettingInYaml1("displayName")) {
+            for(int i = 1;i < (9*5); i++){
+                if(s.getItem(i - 1) != null) {
+                    ItemMeta im = Objects.requireNonNull(s.getItem(i - 1)).getItemMeta();
+                    im.displayName(Component.text(i + "日目 ").color(NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false)
+                            .append(Component.text("✗未受け取り").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, true)));
+                    Objects.requireNonNull(s.getItem(i - 1)).setItemMeta(im);
+                }
+            }
+        }
     }
 }
