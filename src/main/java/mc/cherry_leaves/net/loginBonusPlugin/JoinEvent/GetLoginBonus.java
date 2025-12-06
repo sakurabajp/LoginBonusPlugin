@@ -11,8 +11,10 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
 public class GetLoginBonus {
@@ -24,8 +26,10 @@ public class GetLoginBonus {
         }
         Long lastLogin = p.getPersistentDataContainer()
                 .get(lastLoginKey, PersistentDataType.LONG);
+        /* p.getPersistentDataContainer()
+                .set(lastLoginKey, PersistentDataType.LONG, System.currentTimeMillis() + ZoneId.of("Asia/Tokyo").getRules().getOffset(java.time.Instant.now()).getTotalSeconds() * 1000L);*/
         p.getPersistentDataContainer()
-                .set(lastLoginKey, PersistentDataType.LONG, System.currentTimeMillis() + ZoneId.of("Asia/Tokyo").getRules().getOffset(java.time.Instant.now()).getTotalSeconds() * 1000L);
+                .set(lastLoginKey, PersistentDataType.LONG, ZonedDateTime.ofInstant(Instant.now(), ZoneId.of("Asia/Tokyo")).toInstant().toEpochMilli());
 
         NamespacedKey LoginDaysKey = new NamespacedKey(new LoginBonusPlugin(), "login_days");
         if (p.getPersistentDataContainer().get(LoginDaysKey, PersistentDataType.INTEGER) == null) {
