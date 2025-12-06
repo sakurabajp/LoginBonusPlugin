@@ -28,7 +28,7 @@ public class GetLoginBonus {
                 .set(lastLoginKey, PersistentDataType.LONG, System.currentTimeMillis() + ZoneId.of("Asia/Tokyo").getRules().getOffset(java.time.Instant.now()).getTotalSeconds() * 1000L);
 
         NamespacedKey LoginDaysKey = new NamespacedKey(new LoginBonusPlugin(), "login_days");
-        if (!p.hasPlayedBefore()) {
+        if (p.getPersistentDataContainer().get(LoginDaysKey, PersistentDataType.INTEGER) == null) {
             p.getPersistentDataContainer()
                     .set(LoginDaysKey, PersistentDataType.INTEGER, 1);
         }
