@@ -87,7 +87,7 @@ public class GetLoginBonus {
         // 前回ログイン日時をLocalDateに変換
         LocalDate lastLoginDate = LocalDate.ofInstant(
                 java.time.Instant.ofEpochMilli(lastLogin),
-                ZoneId.systemDefault()
+                ZoneId.of("Asia/Tokyo")
         );
 
         // 現在の日付を取得
